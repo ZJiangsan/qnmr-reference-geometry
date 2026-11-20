@@ -37,3 +37,15 @@ python sagmeister_consensus_pilot.py --input data/sagmeister_dynamic_validation.
 ```
 
 Each alignment directory contains `ranking.csv` with individual-origin correlations and `one_marker_summary.csv` with the primary-grid and offset-grid MAEs. The console reports the common-crop full-spectrum MAEs. The consensus pilot writes `summary.csv` and paired per-spectrum errors. It injects the interferents after deriving the clean-spectrum alignment.
+
+## Alignment using selected windows
+
+After preparing the two NPZ files above, run the anchor comparison for Table 3:
+
+```sh
+export OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1
+python sagmeister_anchor_alignment.py --input data/external_validation.npz --out results/anchor_alignment_mixtures --exclude-ppm 7.42 7.66 --random-paths 5 --seed 20261120
+python sagmeister_anchor_alignment.py --input data/sagmeister_dynamic_validation.npz --out results/anchor_alignment_dynamic --exclude-ppm 7.42 7.66 --random-paths 5 --seed 20261120
+```
+
+Use the `table1` rows of `summary.csv` for the original target and marker masks. The `greedy_marker` rows report median one-marker MAE and the union of alignment and quantification points. The `target_only` rows report median Spearman ρ. The `band_free` rows restrict the comparison to fits whose quantification windows avoid the excluded region. Individual origins and random paths are in `per_origin.csv`, selected anchors in `anchor_windows.csv`, and target-level metrics in `target_results.csv`. Shift disagreement is measured against the full-spectrum estimate.
